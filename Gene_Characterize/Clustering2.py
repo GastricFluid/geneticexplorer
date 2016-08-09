@@ -5,8 +5,6 @@ sys.path.append('/root/gene_clusters/geneticexplorer/')
 from scipy.cluster.hierarchy import dendrogram, linkage
 import numpy as npy
 import gene_analyzer
-# gene_list = []
-# var_num = 0
 from sys import argv
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
@@ -36,7 +34,6 @@ def gene_val_select(exclusion_dict, gene):
         gene_vals.append(gene.get_percentintronic())
     if exclusion_dict['lower'] != 1:
         gene_vals.append(gene.get_Lower())
-    print gene_vals
     return gene_vals
 
 
@@ -62,9 +59,7 @@ def clustermethod(gene_list, exclusion_dict):
         #    data = npy.concatenate([past_data, current_point])
         #    past_data = data
         # this code is most likely uneeded ^^^^
-    print array_list
     heirclust = linkage(array_list, "ward")
-    print heirclust[0]
     return heirclust
 
 
