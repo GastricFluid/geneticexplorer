@@ -435,7 +435,6 @@ def bed_analyzer(bed):
         gene_name = Gene("", gene_gc, gene_lower, 0, 0, 0, 0, totalleng, 0, 0)
         gene_list.append(gene_name)
         logger.info(gene_name.get_GCperc)
-        print gene_list
     return gene_list
 
 
