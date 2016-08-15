@@ -1,7 +1,8 @@
 
 import sys
-sys.path.append('/root/gene_clusters/geneticexplorer/')
+sys.path.append('/root/geneticexplorer/')
 
+import matplotlib.pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage
 import numpy as npy
 import gene_analyzer
@@ -21,11 +22,13 @@ def gene_val_select(exclusion_dict, gene):
     """
     gene_vals = []
     if exclusion_dict['GCcont'] != 1:
-        gene_vals.append(gene.get_GCperc())
+        gene_vals.append(gene.GC_Content_entgene())
     if exclusion_dict['totleng'] != 1:
-        gene_vals.append(gene.get_totalleng())
+        gene_vals.append(gene.totallength)
     if exclusion_dict['track'] != 1:
-        gene_vals.append(gene.get_Track_average())
+        gene.get_Track_average()
+        gene_vals.append(gene.NucleotideTrackLength)
+        gene_vals.append(gene.standard_deviation_tracklength)
     if exclusion_dict['18mer'] != 1:
         gene_vals.append(gene.get_eighteen())
     if exclusion_dict['percex'] != 1:
@@ -33,7 +36,7 @@ def gene_val_select(exclusion_dict, gene):
     if exclusion_dict['percint'] != 1:
         gene_vals.append(gene.get_percentintronic())
     if exclusion_dict['lower'] != 1:
-        gene_vals.append(gene.get_Lower())
+        gene_vals.append(gene.Lower_case_count_entgene())
     return gene_vals
 
 
@@ -69,6 +72,16 @@ def workflow(bed, exclusion_dict):
     clustered_array = clustermethod(listpopulator(bed), exclusion_dict)
     print clustered_array
     return clustered_array
+
+
+def visualization(clustered_data):
+    plt.figure()
+    plt.title('Gene Clusters')
+    plt.ylabel('Distance')
+    plt.xlabel('Genes')
+    dendrogram(clustered_data)
+    plt.show()
+    plt.savefig('rad_clusters.png')
 
 
 def exclusion_builder(tracknum, totlengnum, GCcontnum, eighteenmernum,
@@ -119,7 +132,8 @@ def main(args, args_parsed=None):
 
     if opts.bed is not None:
         bed_file = opts.bed
-        workflow(bed_file, exclusion_dict)
+        clustered_data = workflow(bed_file, exclusion_dict)
+        visualization(clustered_data)
 
     else:
         print "please give a bed file"
