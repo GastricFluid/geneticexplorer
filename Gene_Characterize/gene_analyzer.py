@@ -336,6 +336,8 @@ class Gene:
                                                               (len(self.intron_base_l) - 1))
 
     def get_eighteen(self):
+        """finds and sets 18mer count
+        """
         k = 18
         EighteenMer_Count = 0
         for i in range(len(self.sequence) - k + 1):
@@ -347,26 +349,6 @@ class Gene:
         if EighteenMer_Count not in self.eighteenMers.keys():
             self.eighteenMers[EighteenMer_Count] = 0
         return self.eighteenMers[EighteenMer_Count]
-
-    """def get_exleng(self):
-        exon_count = 0
-        for base in (self.sequence):
-            if base == exon:
-                exon_count += 1
-            if base != exon:
-                self.exon_l.append(exon_count)
-                exon_count = 0
-        self.exonlength = sum(int(exon_count) for exon_count in self.exon_l)
-
-    def get_inleng(self):
-        intron_count = 0
-        for base in (self.sequence):
-            if base == intron:
-                intron_count += 1
-            if base != intron:
-                self.intron_l.append(intron_count)
-                intron_count = 0
-        self.intronlength = sum(int(intron_count) for intron_count in self.intron_l)"""
 
     def get_totalleng(self):
         """Find the exon/intron lengths, percents, averages, and standard deviations
@@ -425,19 +407,6 @@ def extract_sequence_from_genome(chromosome, start, stop,
     return \
         "".join(output_fasta[1:]).replace("\n", "").strip()
 
-def only_exon(bed):
-    f1 = open('hg19 file', 'r')
-    f2 = open('exon', 'w')
-    f4 = open('hg19.exons_introns.gtf', 'r')
-
-    for line in f4:
-        if gene_coordinate_start in f1 <= exon_end in f4:
-            f2.write(line)
-
-    f1.close()
-    f2.close()
-    f4.close()
-
 
 def bed_analyzer(bed):
     """the main process of Gene_Characterize
@@ -477,6 +446,8 @@ def parseCmdlineParams(arg_list=sys.argv):
 
 
 def main(argv):
+    """run when the name of the program is called
+    """
     opts = parseCmdlineParams(argv)
     gene = bed_analyzer(opts.bed)
     for curr in gene:

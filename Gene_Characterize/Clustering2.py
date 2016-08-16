@@ -2,6 +2,8 @@
 import sys
 sys.path.append('/root/geneticexplorer/')
 
+#import plotly.plotly as py
+#import plotly.graph_objs as go
 import matplotlib.pyplot as plt
 from scipy.cluster.hierarchy import dendrogram, linkage
 import numpy as npy
@@ -53,7 +55,7 @@ def clustermethod(gene_list, exclusion_dict):
         array_val = npy.fromiter(gene_vals, float)
         array_list.append(array_val)
     heirclust = linkage(array_list, "ward")
-    return heirclust
+    return (heirclust, array_list)
 
 
 def workflow(bed, exclusion_dict):
@@ -62,12 +64,34 @@ def workflow(bed, exclusion_dict):
     gene_list = listpopulator(bed)
     names = gene_list[0]
     clustered_array = clustermethod(gene_list[1], exclusion_dict)
-    return (names, clustered_array)
+    return (names, clustered_array[0])
+
+
+def heatmap(gene_list, gene_names, exclusion_dict):
+    """produces heatmap with data, not functional and using module which is not installed(and most likely does not work)
+    """
+    name_num = 0
+    heat_z = [[]]
+    for gene in gene_list:
+        name = gene_names(name_num)
+        gene_vals = gene_val_select(exclusion_dict, gene)
+        gene_list = [name]
+        for val in gene_vals:
+            gene_list.append(val)
+        heat_z.append(gene_list)
+    data = [
+        go.Heatmap(
+            z=heat_z
+            )
+        ]
+    py.iplot(data, filename='rad_map')
 
 
 def visualization(clustered_data, gene_names):
+    """produces a pdf of the clustered data
+    """
     gene_names = gene_names
-    plt.figure(figsize=(15, 20))
+    plt.figure(figsize=(25, 30))
     plt.title('Gene Clusters')
     plt.ylabel('Distance')
     plt.xlabel('Genes')
@@ -126,6 +150,7 @@ def main(args, args_parsed=None):
         bed_file = opts.bed
         clustered_data = workflow(bed_file, exclusion_dict)
         visualization(clustered_data[1], clustered_data[0])
+        #heatmap(clustered_data[1], clustered_data[0])
 
     else:
         print "please give a bed file"
