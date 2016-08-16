@@ -337,12 +337,15 @@ class Gene:
 
     def get_eighteen(self):
         k = 18
+        EighteenMer_Count = 0
         for i in range(len(self.sequence) - k + 1):
             EighteenMer_Count = self.sequence[i:i + k]
             if EighteenMer_Count in self.eighteenMers:
                 self.eighteenMers[EighteenMer_Count] += 1
             else:
                 self.eighteenMers[EighteenMer_Count] = 1
+        if EighteenMer_Count not in self.eighteenMers.keys():
+            self.eighteenMers[EighteenMer_Count] = 0
         return self.eighteenMers[EighteenMer_Count]
 
     """def get_exleng(self):
@@ -418,7 +421,6 @@ def extract_sequence_from_genome(chromosome, start, stop,
     output_file = result['output_file']
     output_fasta = [x.strip() for x in output_file.readlines()]
 
-    #print output_fasta
     # The sequence will be the second line in the result
     return \
         "".join(output_fasta[1:]).replace("\n", "").strip()
@@ -436,66 +438,24 @@ def only_exon(bed):
     f2.close()
     f4.close()
 
-"""def GC_Content_entgene(extracted_seq):
-    ex_seq = extracted_seq
-    gc_counter = 0
-    total_base = 0
-    if '>' not in ex_seq:
-        for base in ex_seq:
-            if base != '\n':
-                total_base += 1
-            if base == 'g':
-                gc_counter += 1
-            if base == 'c':
-                gc_counter += 1
-            if base == 'G':
-                gc_counter += 1
-            if base == 'C':
-                gc_counter += 1
-    GC_percent = float(gc_counter) / float(total_base)
-    return GC_percent
-
-
-def TotalLength_entgene(extracted_seq):
-    ex_seq = extracted_seq
-    total_count = 0
-    if '>' not in ex_seq:
-        for base in ex_seq:
-            total_count += 1
-    return total_count
-
-
-def Lower_case_count_entgene(extraced_seq):
-    ex_seq = extraced_seq
-    lower_count = 0
-    total = 0
-    if '>' not in ex_seq:
-        for base in ex_seq:
-            total += 1
-            if base.islower():
-                lower_count += 1
-    percent_lower = float(lower_count) / float(total)
-    return percent_lower"""
-
 
 def bed_analyzer(bed):
     """the main process of Gene_Characterize
     """
     gene_list = []
+    name_list = []
     gene_num = 0
     for line in open(bed, 'r'):
         gene_num += 1
         gene_name = gene_num
         bed_data = line.split()
         single_gene = extract_sequence_from_genome(bed_data[0], int(bed_data[1]), int(bed_data[2]))
+        name = bed_data[3]
+        name_list.append(name)
         single_gene_clone = single_gene
-        #gene_lower = Lower_case_count_entgene(single_gene)
-        #gene_gc = GC_Content_entgene(single_gene_clone)
-        #totalleng = TotalLength_entgene(single_gene)
         gene_name = Gene(single_gene_clone)
         gene_list.append(gene_name)
-
-    return gene_list
+    return (name_list, gene_list)
 
 
 def parseCmdlineParams(arg_list=sys.argv):

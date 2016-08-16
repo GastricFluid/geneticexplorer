@@ -14,7 +14,9 @@ def listpopulator(bed_file):
     """creates list of genes for use in clustering
     """
     gene_list = gene_analyzer.bed_analyzer(bed_file)
-    return gene_list
+    genes = gene_list[1]
+    names = gene_list[0]
+    return (names, genes)
 
 
 def gene_val_select(exclusion_dict, gene):
@@ -45,23 +47,11 @@ def clustermethod(gene_list, exclusion_dict):
     """
     array_val = 0
     array_list = []
-    past_point = False
     for gene in gene_list:
         array_val += 1
         gene_vals = gene_val_select(exclusion_dict, gene)
         array_val = npy.fromiter(gene_vals, float)
         array_list.append(array_val)
-        # loop produces a ndarray for every gene, containing it's data, for use in concatenation then clustering
-        #for point in array_list:
-        # loop concatenates all the data
-        #current_point = point
-        #if past_point is False:
-        #    past_point = True
-        #    past_data = point
-        #else:
-        #    data = npy.concatenate([past_data, current_point])
-        #    past_data = data
-        # this code is most likely uneeded ^^^^
     heirclust = linkage(array_list, "ward")
     return heirclust
 
@@ -69,17 +59,19 @@ def clustermethod(gene_list, exclusion_dict):
 def workflow(bed, exclusion_dict):
     """workflow given a bed file and dict of what to exclude which produces a clustered ndarray
     """
-    clustered_array = clustermethod(listpopulator(bed), exclusion_dict)
-    print clustered_array
-    return clustered_array
+    gene_list = listpopulator(bed)
+    names = gene_list[0]
+    clustered_array = clustermethod(gene_list[1], exclusion_dict)
+    return (names, clustered_array)
 
 
-def visualization(clustered_data):
-    plt.figure()
+def visualization(clustered_data, gene_names):
+    gene_names = gene_names
+    plt.figure(figsize=(15, 20))
     plt.title('Gene Clusters')
     plt.ylabel('Distance')
     plt.xlabel('Genes')
-    dendrogram(clustered_data)
+    dendrogram(clustered_data, labels=gene_names, show_leaf_counts=False)
     plt.show()
     plt.savefig('rad_clusters.png')
 
@@ -133,7 +125,7 @@ def main(args, args_parsed=None):
     if opts.bed is not None:
         bed_file = opts.bed
         clustered_data = workflow(bed_file, exclusion_dict)
-        visualization(clustered_data)
+        visualization(clustered_data[1], clustered_data[0])
 
     else:
         print "please give a bed file"
